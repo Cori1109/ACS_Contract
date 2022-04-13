@@ -167,12 +167,24 @@ contract AltCoinStaking is ERC721Enumerable, Ownable, ReentrancyGuard {
     }
 
     // ===== View =====
+    function balance() public view returns (uint256) {
+        return address(this).balance;
+    }
+
     function mintedCnt() public view returns (uint256[] memory) {
         uint256[] memory _mintedcnt = new uint256[] (5);
         for (uint256 i = 0; i < 5; i++) {
             _mintedcnt[i] = _tokenIdTracker[i] - LEVEL_MAX[i];
         }
         return _mintedcnt;
+    }
+
+    function getHolderList() public view returns (address[] memory) {
+        address[] memory _holder = new address[] (_holderCnt.current());
+        for (uint256 i = 0; i < _holderCnt.current(); i++) {
+            _holder[i] = holderList[i];
+        }
+        return _holder;
     }
 
     function rewardData(address _address) public view returns (RewardData memory) {
