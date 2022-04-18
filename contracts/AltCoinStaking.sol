@@ -32,7 +32,7 @@ contract AltCoinStaking is ERC721Enumerable, Ownable, ReentrancyGuard {
     // uint256[] public LEVEL_PRICE = [1000 ether, 4000 ether, 8000 ether, 16000 ether, 32000 ether]; // 1 ether means 1 MATIC
     uint256[] private LEVEL_PRICE = [0.01 ether, 0.04 ether, 0.08 ether, 0.16 ether, 0.32 ether];
     uint256[] private _tokenIdTracker = [0, 3800, 6300, 8200, 9200];
-    address private teamWallet;
+    address public teamWallet;
 
     // state variable
     bool public MINTING_PAUSED = true;
@@ -104,6 +104,13 @@ contract AltCoinStaking is ERC721Enumerable, Ownable, ReentrancyGuard {
             _totalPoint += LEVEL_POINT[i] * (_tokenIdTracker[i] - LEVEL_MAX[i]);
         }
         return _totalPoint;
+    }
+
+    // ===== Deposit =====
+
+    function deposit() external payable onlySender nonReentrant {
+        require(msg.value > 0, "Payment amount is not sufficient");
+        require(totalSupply() > 0, "No NFTs have been minted");
     }
 
     // ===== Setter (owner only) =====
@@ -187,8 +194,8 @@ contract AltCoinStaking is ERC721Enumerable, Ownable, ReentrancyGuard {
         return _holder;
     }
 
-    function rewardData(address _address) public view returns (RewardData memory) {
-        return rewardPoint[_address];
+    function monthlyReward(address _address) public view returns (uint256) {
+        return rewardPoint[_address].reward;
     }
 
     function mintPrice() public view returns (uint256[] memory) {
