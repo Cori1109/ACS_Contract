@@ -52,7 +52,7 @@ module.exports = {
   // Configure your compilers
   compilers: {
     solc: {
-      version: "0.8.4",
+      version: "0.8.7",
       settings: {
         optimizer: {
           enabled: true,
@@ -63,8 +63,8 @@ module.exports = {
     },
   },
   api_keys: {
-    // etherscan: process.env.ETHERSCAN_API_KEY,
-    etherscan: process.env.POLYGONSCAN_API_KEY,
+    etherscan: process.env.ETHERSCAN_API_KEY,
+    // etherscan: process.env.POLYGONSCAN_API_KEY,
   },
   plugins: ["truffle-plugin-verify"],
 };

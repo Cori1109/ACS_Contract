@@ -63,6 +63,12 @@ contract AltCoinStaking is ERC721Enumerable, Ownable, ReentrancyGuard {
         _;
     }
 
+    // ===== Deposit =====
+    function deposit() external payable onlySender nonReentrant {
+        require(msg.value > 0, "Payment amount is not sufficient");
+        require(totalSupply() > 0, "No NFTs have been minted");
+    }
+
     // ===== Mint =====
     function mint(uint256[] memory numberOfTokens) external payable onlySender nonReentrant {
         require(!MINTING_PAUSED, "Minting is not active");
@@ -104,13 +110,6 @@ contract AltCoinStaking is ERC721Enumerable, Ownable, ReentrancyGuard {
             _totalPoint += LEVEL_POINT[i] * (_tokenIdTracker[i] - LEVEL_MAX[i]);
         }
         return _totalPoint;
-    }
-
-    // ===== Deposit =====
-
-    function deposit() external payable onlySender nonReentrant {
-        require(msg.value > 0, "Payment amount is not sufficient");
-        require(totalSupply() > 0, "No NFTs have been minted");
     }
 
     // ===== Setter (owner only) =====
@@ -166,11 +165,12 @@ contract AltCoinStaking is ERC721Enumerable, Ownable, ReentrancyGuard {
         require(_holderCnt.current() > 0, "No NFT holder exist");
         require(address(this).balance > 0, "Insufficient funds");
         uint256 _totalPoint = getTotalPoint();
+        uint256 _teamBonus = address(this).balance;
         for (uint256 i = 0; i < _holderCnt.current(); i++) {
-            rewardPoint[holderList[i]].reward = address(this).balance * rewardPoint[holderList[i]].point / _totalPoint;
+            rewardPoint[holderList[i]].reward = _teamBonus * rewardPoint[holderList[i]].point / _totalPoint;
             payable(holderList[i]).transfer(rewardPoint[holderList[i]].reward);
         }
-        payable(teamWallet).transfer(address(this).balance);
+        payable(teamWallet).transfer(_teamBonus / 10);
     }
 
     // ===== View =====
@@ -194,7 +194,7 @@ contract AltCoinStaking is ERC721Enumerable, Ownable, ReentrancyGuard {
         return _holder;
     }
 
-    function monthlyReward(address _address) public view returns (uint256) {
+    function getReward(address _address) public view returns (uint256) {
         return rewardPoint[_address].reward;
     }
 
