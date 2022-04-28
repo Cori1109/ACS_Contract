@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract ACSMarketplace is ReentrancyGuard, Ownable {
+contract ZenMarketplace is ReentrancyGuard, Ownable {
     using Counters for Counters.Counter;
     using ERC165Checker for address;
 
@@ -57,7 +57,9 @@ contract ACSMarketplace is ReentrancyGuard, Ownable {
         address seller,
         address owner,
         uint256 price
-    );    
+    );  
+
+    event CanncelList (address seller, uint256 indexed tokenId);
     
     
     function createMarketItem(
@@ -149,6 +151,7 @@ contract ACSMarketplace is ReentrancyGuard, Ownable {
         item.status = ListingStatus.Cancelled;
 
         IERC721(item.nftContract).transferFrom(address(this), msg.sender, item.tokenId);
+        emit CanncelList(msg.sender, item.tokenId);
     }
 
     //only owner
